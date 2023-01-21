@@ -8,6 +8,7 @@ import { PagesModule } from './pages/pages.module';
 import { AppComponent } from './app.component';
 import { NopagesfoundComponent } from './nopagesfound/nopagesfound.component';
 import { AuthModule } from './auth/auth.module';
+import { IncrementadorComponent } from './components/incrementador/incrementador.component';
 
 
 
@@ -15,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
   declarations: [
     AppComponent,
     NopagesfoundComponent
+    
     
    
   ],
