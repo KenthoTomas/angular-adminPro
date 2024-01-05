@@ -7,6 +7,7 @@ import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { Usuario } from '../models/usuario.model';
 
 declare const google: any;
 
@@ -16,10 +17,19 @@ const base_url = environment.base_url;
 })
 export class UsuarioService {
 
+  //varificar mas adelante el porque inconveninte clas 183
+  public usuario!: Usuario;
+  
+
   constructor(private http : HttpClient,
               private router: Router,
-              private ngZone: NgZone) { }
+              private ngZone: NgZone) {  }
+              
 
+  get token():string{
+    return localStorage.getItem('token') || '';
+  }
+            
   logout(){
     localStorage.removeItem('token');
     google.accounts.id.revoke('kennethtomas.it@gmail.com', ()=>{
@@ -30,6 +40,7 @@ export class UsuarioService {
     })
   }
 
+
   validarToken(){
     const token = localStorage.getItem('token') || '';
 
@@ -37,11 +48,38 @@ export class UsuarioService {
       headers:{
         'x-token':token
       }
-    } ).pipe(tap(
-      (resp:any)=>{localStorage.setItem('token',resp.token);}
-    ), map(resp=>true),catchError(error=>of(false)))
+    } ).pipe(
+      tap((resp:any)=>
+      {
+        //const {email,google,nombre,role,img,uid} = resp.usuarioDB;
+        const email = resp.usuarioDB.email;
+        const google=resp.usuarioDB.google;
+        const nombre=resp.usuarioDB.nombre;
+        const role  =resp.usuarioDB.role;
+        const img   =resp.usuarioDB.img;
+        const uid   =resp.usuarioDB.uid;
+
+        console.log(resp.usuarioDB.img+' USUARIO DB')
+        this.usuario = new Usuario(nombre, email, '',google, img, role, uid);
+        console.log(img+'PROPIEDAD DEL USUARIO SERVICE VALIDAR TOKEN')
+        localStorage.setItem('token',resp.token);
+       
+      }
+    ), map(resp=>true),catchError(error=>{
+      console.log(error)
+      return of  (false);}))
 
   }
+
+  actualizarPerfil(data:{email:string, nombre:string}){
+    
+    return this.http.put(`${base_url}/usuarios/${this.usuario.uid}`,data,{
+      headers:{
+        'x-token':this.token
+      }})
+
+  }
+
   crearUsuario(formData:RegisterForm){
     console.log('creando usuario');
    return this.http.post(`${base_url}/usuarios`,formData)
@@ -53,11 +91,12 @@ export class UsuarioService {
   }
 
   login(formData:LoginForm){
-    console.log('creando usuario');
+    console.log('creando usuarioaaaa');
    return this.http.post(`${base_url}/login`,formData)
    .pipe(
     tap((resp:any)=>{
       localStorage.setItem('token',resp.token);
+      console.log(resp.picture+' LOGIN')
     })
    )
   }
@@ -68,6 +107,7 @@ export class UsuarioService {
     .pipe(
       tap((resp:any)=>{
         localStorage.setItem('token',resp.token);
+        console.log(resp.picture+'usuario.service - loginGoogle')
       })
     )
   }
