@@ -5,6 +5,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { IncrementadorComponent } from './incrementador/incrementador.component';
 import { FormsModule } from '@angular/forms';
 import { DonaComponent } from './dona/dona.component';
+import { ModalImagenesComponent } from './modal-imagenes/modal-imagenes.component';
 
 
 
@@ -12,10 +13,12 @@ import { DonaComponent } from './dona/dona.component';
   declarations: [
     IncrementadorComponent,
     DonaComponent,
+    ModalImagenesComponent,
   ],
   exports:[
     IncrementadorComponent,
-    DonaComponent
+    DonaComponent,
+    ModalImagenesComponent
   ],
   imports: [
     CommonModule,

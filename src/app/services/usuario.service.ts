@@ -5,6 +5,7 @@ import {Observable,of} from 'rxjs'
 
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
+import { CargarUsuarios } from '../interfaces/cargar-usuarios.interface';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { Usuario } from '../models/usuario.model';
@@ -19,24 +20,24 @@ export class UsuarioService {
 
   //varificar mas adelante el porque inconveninte clas 183
   public usuario!: Usuario;
-  
+
 
   constructor(private http : HttpClient,
               private router: Router,
               private ngZone: NgZone) {  }
-              
+
 
   get token():string{
     return localStorage.getItem('token') || '';
   }
-            
+
   logout(){
     localStorage.removeItem('token');
     google.accounts.id.revoke('kennethtomas.it@gmail.com', ()=>{
       this.ngZone.run(()=>{
         this.router.navigateByUrl('/login');
       })
-      
+
     })
   }
 
@@ -63,7 +64,7 @@ export class UsuarioService {
         this.usuario = new Usuario(nombre, email, '',google, img, role, uid);
         console.log(img+'PROPIEDAD DEL USUARIO SERVICE VALIDAR TOKEN')
         localStorage.setItem('token',resp.token);
-       
+
       }
     ), map(resp=>true),catchError(error=>{
       console.log(error)
@@ -71,8 +72,13 @@ export class UsuarioService {
 
   }
 
-  actualizarPerfil(data:{email:string, nombre:string}){
-    
+  actualizarPerfil(data:{email:string, nombre:string,role:string}){
+
+    data={
+      ...data,
+      role:this.usuario.role!
+    }
+
     return this.http.put(`${base_url}/usuarios/${this.usuario.uid}`,data,{
       headers:{
         'x-token':this.token
@@ -91,7 +97,7 @@ export class UsuarioService {
   }
 
   login(formData:LoginForm){
-    console.log('creando usuarioaaaa');
+    console.log('creando usuario01');
    return this.http.post(`${base_url}/login`,formData)
    .pipe(
     tap((resp:any)=>{
@@ -111,6 +117,38 @@ export class UsuarioService {
       })
     )
   }
+  cargarUsuarios(desde: number =0){
+    return this.http.get<CargarUsuarios>(`${base_url}/usuarios?desde=${desde}`,{
+      headers:{
+        'x-token':this.token
+      }}).pipe(
+
+        map(resp=>{
+          const usuarios=resp.usuarios.map(
+            user=>new Usuario(user.nombre,user.email,'',user.google,user.img,user.role,user.uid))
+          return {
+            total: resp.total,
+            usuarios
+          };
+        })
+      )
+  }
+  eliminarUsuario(usuario:Usuario){
+    return this.http.delete(`${base_url}/usuarios/${usuario.uid}`,{
+      headers:{
+        'x-token':this.token
+      }})
+  }
+
+  actualizarUsuario(data:Usuario){
+
+    return this.http.put(`${base_url}/usuarios/${data.uid}`,data,{
+      headers:{
+        'x-token':this.token
+      }})
+
+  }
+
 }
 
 

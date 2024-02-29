@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
- 
+
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { Grafica1Component } from './grafica1/grafica1.component';
 import { PagesComponent } from './pages.component';
@@ -15,6 +15,9 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
 import { PromesasComponent } from './promesas/promesas.component';
 import { RxjsComponent } from './rxjs/rxjs.component';
 import { PerfilComponent } from './perfil/perfil.component';
+import { UsuariosComponent } from './mantenimientos/usuarios/usuarios.component';
+import { ModalImagenesComponent } from '../components/modal-imagenes/modal-imagenes.component';
+
 
 
 
@@ -29,8 +32,10 @@ import { PerfilComponent } from './perfil/perfil.component';
     AccountSettingsComponent,
     PromesasComponent,
     RxjsComponent,
-    PerfilComponent
-  
+    PerfilComponent,
+    UsuariosComponent,
+    
+
   ],
   exports:[
     DashboardComponent,
@@ -47,8 +52,9 @@ import { PerfilComponent } from './perfil/perfil.component';
     ReactiveFormsModule,
     SharedModule,
     FormsModule,
-    ComponentsModule
+    ComponentsModule,
     
+
   ]
 })
 export class PagesModule { }
